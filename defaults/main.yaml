@@ -1,0 +1,70 @@
+---
+
+# URL to the RPM
+aspera_server_download_url: https://download.asperasoft.com/download/sw/entsrv/3.8.0/aspera-entsrv-3.8.0.154152-linux-64.rpm
+
+# Download user name (must be provided by the user)
+aspera_server_download_user: null
+
+# Download user pasword (must be provided by the user)
+aspera_server_download_pass: null
+
+# Dependency packages
+aspera_server_deps:
+  - perl-Digest-MD5
+  - perl-Data-Dumper
+
+# Service names
+aspera_server_services:
+  - asperanoded
+
+# Location of temp file (used to download the RPM)
+aspera_server_tmp: /tmp
+
+# Location of the license file
+aspera_server_lic_file: /opt/aspera/etc/aspera-license
+
+# License (must be provided by the user)
+aspera_server_lic: null
+
+
+# Location of the configuration file aspera.conf
+aspera_server_conf_file: /opt/aspera/etc/aspera.conf
+
+# Values of the options of the central_server block
+aspera_server_conf_central_server_port: 40001
+aspera_server_conf_central_server_address: 127.0.0.1
+
+# Default options of the central_server block
+aspera_server_conf_central_server__default:
+  - port: "{{ aspera_server_conf_central_server_port }}"
+  - address: "{{ aspera_server_conf_central_server_address }}"
+
+# Custom options of the central_server block
+aspera_server_conf_central_server__custom: []
+
+# Final options of the central_server block
+aspera_server_conf_central_server: "{{
+  aspera_server_conf_central_server__default +
+  aspera_server_conf_central_server__custom }}"
+
+# Values of the default config options
+aspera_server_conf_version: 2
+aspera_server_conf_default: ""
+aspera_server_conf_aaa: ""
+
+# Default config options
+aspera_server_conf__default:
+  - ^version: "{{ aspera_server_conf_version }}"
+  - central_server: "{{ aspera_server_conf_central_server }}"
+  - default: "{{ aspera_server_conf_default }}"
+  - aaa: "{{ aspera_server_conf_aaa }}"
+
+# Custom config options
+aspera_server_conf__custom: []
+
+# Final config
+aspera_server_conf:
+  - CONF: "{{
+      aspera_server_conf__default +
+      aspera_server_conf__custom }}"

@@ -1,0 +1,71 @@
+---
+
+- name: Test distribution
+  assert:
+    that: >
+      ansible_os_family == 'RedHat'
+
+# TODO: First check if the package of the right version is already installed
+#       and then and only then downlod the file
+
+- name: Download Aspera Server RPM
+  get_url:
+    url: "{{ aspera_server_download_url }}"
+    dest: "{{ aspera_server_tmp }}/{{ aspera_server_download_url | basename }}"
+    url_username: "{{ aspera_server_download_user | default(omit) }}"
+    url_password: "{{ aspera_server_download_pass | default(omit) }}"
+  tags:
+    - aspera_server_pkg
+
+- name: Install Aspera Server RPM
+  yum:
+    name: file:///{{ aspera_server_tmp }}/{{ aspera_server_download_url | basename }}
+  notify:
+    - Restart Aspera Server services
+  tags:
+    - aspera_server_pkg
+
+- name: Install Aspera Server dependencies
+  package:
+    name: "{{ item }}"
+  with_items: "{{ aspera_server_deps }}"
+  tags:
+    - aspera_server_pkg
+
+- name: Configure Aspera Server
+  template:
+    src: aspera.conf.j2
+    dest: "{{ aspera_server_conf_file }}"
+  notify:
+    - Restart Aspera Server services
+  tags:
+    - aspera_server_conf
+
+- name: Create license file
+  copy:
+    content: "{{ aspera_server_lic }}"
+    dest: "{{ aspera_server_lic_file }}"
+  notify:
+    - Restart Aspera Server services
+  when: >
+    aspera_server_lic is defined and
+    aspera_server_lic | length > 0
+  tags:
+    - aspera_server_conf
+
+- name: Enable Aspera Server services
+  service:
+    name: "{{ item }}"
+    enabled: yes
+  with_items: "{{ aspera_server_services }}"
+  tags:
+    - aspera_server_service
+
+- name: Start Aspera Server services
+  service:
+    name: "{{ item }}"
+    state: started
+  with_items: "{{ aspera_server_services }}"
+  register: aspera_server_service_started
+  tags:
+    - aspera_server_service

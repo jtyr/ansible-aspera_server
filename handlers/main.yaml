@@ -1,0 +1,11 @@
+---
+
+- name: Restart Aspera Server services
+  service:
+    name: "{{ item.name }}"
+    state: restarted
+  when: >
+    not item.changed
+  with_items: "{{ aspera_server_service_started.results | default([]) }}"
+  tags:
+    - aspera_server_service

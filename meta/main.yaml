@@ -1,0 +1,16 @@
+---
+
+galaxy_info:
+  author: Jiri Tyr
+  description: Role which installs and configures Aspera Server
+  license: MIT
+  min_ansible_version: 2.4
+  platforms:
+    - name: EL
+      versions:
+        - 6
+        - 7
+  galaxy_tags:
+    - storage
+dependencies:
+  - config_encoder_filters
